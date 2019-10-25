@@ -1,7 +1,7 @@
-# docker build --pull -t sonarqube:6.7.1-rhel7 -t sonarqube .
+# docker build --pull -t sonarqube:7.9.1-rhel7 -t sonarqube .
 FROM registry.access.redhat.com/rhel7
 
-ENV SONAR_VERSION=6.7.1 \
+ENV SONAR_VERSION=7.9.1 \
     SONARQUBE_HOME=/opt/sonarqube \
     # Database configuration
     # Defaults to using H2
