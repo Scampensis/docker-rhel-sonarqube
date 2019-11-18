@@ -1,4 +1,4 @@
-FROM --rm -ti -u root registry.access.redhat.com/ubi7/ubi
+FROM -u root registry.access.redhat.com/ubi7/ubi
 
 CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
 
