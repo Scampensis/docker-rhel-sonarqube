@@ -1,4 +1,5 @@
     FROM registry.access.redhat.com/ubi7/ubi
+    CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
     MAINTAINER Red Hat, Inc.
     LABEL com.redhat.component="ubi7-container"
     LABEL name="ubi7"
