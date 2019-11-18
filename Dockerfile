@@ -29,7 +29,7 @@ USER root
 # Http port
 EXPOSE 9000
 
-ADD /
+ADD root /
 
 LABEL name="sonarqube" \
       vendor="SonarSource" \
