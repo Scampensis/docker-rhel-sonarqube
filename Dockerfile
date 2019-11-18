@@ -8,7 +8,7 @@ LABEL maintainer="Kostaq Cipo <kostaq.cipo@lhind.dlh.de>"
 
 # Update image
 #RUN yum update --disablerepo=* --enablerepo=ubi-7-appstream --enablerepo=ubi-7-baseos -y && rm -rf /var/cache/yum
-RUN yum install --disablerepo=* --enablerepo=ubi-7-appstream --enablerepo=ubi-7-baseos unzip -y && rm -rf /var/cache/yum
+RUN yum install unzip -y && rm -rf /var/cache/yum
 RUN yum install java-11-openjdk-devel -y && rm -rf /var/cache/yum
 
 ENV ARTIFACTORY_API="AKCp5Zjz35khuBt5ZR9jYQLrFB4TVqiXuoDDzFY5oXNtSoTuaVwraxkXfCQaLQ5JfHMuczR28"
