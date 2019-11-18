@@ -7,7 +7,6 @@ USER root
 LABEL maintainer="Kostaq Cipo <kostaq.cipo@lhind.dlh.de>"
 
 # Update image
-
 # RUN yum update --disablerepo=* --enablerepo=ubi-7-appstream --enablerepo=ubi-7-baseos -y && rm -rf /var/cache/yum
 RUN yum install unzip -y && rm -rf /var/cache/yum
 RUN yum install java-11-openjdk-devel -y && rm -rf /var/cache/yum
@@ -30,7 +29,7 @@ USER root
 # Http port
 EXPOSE 9000
 
-# ADD root /
+ADD root /
 
 LABEL name="sonarqube" \
       vendor="SonarSource" \
@@ -70,4 +69,3 @@ VOLUME ["${SONARQUBE_HOME}/data", "${SONARQUBE_HOME}/extensions"]
 USER sonar
 WORKDIR ${SONARQUBE_HOME}
 ENTRYPOINT run.sh
-
