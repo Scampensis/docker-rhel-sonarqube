@@ -6,6 +6,5 @@ USER root
 
 LABEL maintainer="Kostaq Cipo <kostaq.cipo@lhind.dlh.de>"
 
-RUN run -u root yum update --disablerepo=* --enablerepo=ubi-7-appstream --enablerepo=ubi-7-baseos -y && rm -rf /var/cache/yum
 RUN run -u root yum install unzip -y && rm -rf /var/cache/yum
 RUN run -u root yum install java-11-openjdk-devel -y && rm -rf /var/cache/yum
