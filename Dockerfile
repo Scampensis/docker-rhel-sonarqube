@@ -1,4 +1,4 @@
-    FROM koji/image-build
+    FROM koji/registry.access.redhat.com/ubi7/ubi
     MAINTAINER Red Hat, Inc.
     LABEL com.redhat.component="ubi7-container"
     LABEL name="ubi7"
