@@ -1,7 +1,21 @@
-# docker build --pull -t sonarqube:6.7.1-rhel7 -t sonarqube .
-FROM registry.access.redhat.com/rhel7
+FROM registry.access.redhat.com/ubi7/ubi
 
-ENV SONAR_VERSION=6.7.1 \
+CMD exec /bin/bash -c "trap : TERM INT; sleep infinity & wait"
+
+USER root
+
+LABEL maintainer="Kostaq Cipo <kostaq.cipo@lhind.dlh.de>"
+
+# Update image
+RUN yum update --disablerepo=* --enablerepo=ubi-7-appstream --enablerepo=ubi-7-baseos -y && rm -rf /var/cache/yum
+RUN yum install --disablerepo=* --enablerepo=ubi-7-appstream --enablerepo=ubi-7-baseos unzip -y && rm -rf /var/cache/yum
+
+# RUN yum install java-11-openjdk-devel -y && rm -rf /var/cache/yum
+
+ENV ARTIFACTORY_API="AKCp5Zjz35khuBt5ZR9jYQLrFB4TVqiXuoDDzFY5oXNtSoTuaVwraxkXfCQaLQ5JfHMuczR28"
+ENV ARTIFACTORY_URL="https://ocrepo.lhind.app.lufthansa.com/artifactory"
+
+ENV SONAR_VERSION=7.8 \
     SONARQUBE_HOME=/opt/sonarqube \
     # Database configuration
     # Defaults to using H2
@@ -11,8 +25,12 @@ ENV SONAR_VERSION=6.7.1 \
     LANG=en_US.utf8 \
     JAVA_HOME=/usr/lib/jvm/jre
 
+USER root
+
 # Http port
 EXPOSE 9000
+
+ADD root /
 
 LABEL name="sonarqube" \
       vendor="SonarSource" \
@@ -25,26 +43,15 @@ LABEL name="sonarqube" \
       io.k8s.display-name="SonarQube" \
       io.openshift.build.commit.author="Red Hat Systems Engineering <refarch-feedback@redhat.com>" \
       io.openshift.expose-services="9000:9000" \
-      io.openshift.tags="sonarqube,sonar,sonarsource"
-
-RUN yum -y update-minimal --disablerepo "*" --enablerepo rhel-7-server-rpms --setopt=tsflags=nodocs \
-      --security --sec-severity=Important --sec-severity=Critical && \
-    yum -y install --disablerepo "*" --enablerepo rhel-7-server-rpms,rhel-7-server-optional-rpms --setopt=tsflags=nodocs java-1.8.0-openjdk unzip hostname && \
-    yum clean all
+      io.openshift.tags="sonarqube,sonar,sonarsource" 
 
 RUN set -x \
-    # pub   2048R/D26468DE 2015-05-25
-    #       Key fingerprint = F118 2E81 C792 9289 21DB  CAB4 CFCA 4A29 D264 68DE
-    # uid                  sonarsource_deployer (Sonarsource Deployer) <infra@sonarsource.com>
-    # sub   2048R/06855C1D 2015-05-25
-    gpg --gen-key && \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys F1182E81C792928921DBCAB4CFCA4A29D26468DE && \
+    
     cd /opt && \
-    curl -o sonarqube.zip -SL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-${SONAR_VERSION}.zip \
+    curl -o sonarqube.zip -SL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-$SONAR_VERSION.zip \
                 --retry 9 --retry-max-time 0 -C - && \
-    curl -o sonarqube.zip.asc -SL https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-${SONAR_VERSION}.zip.asc \
+    curl -o sonarqube.zip.asc -SL https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-${SONAR_VERSION}.zip.asc \
                 --retry 9 --retry-max-time 0 -C - && \
-    gpg --batch --verify sonarqube.zip.asc sonarqube.zip && \
     unzip sonarqube.zip && \
     mv sonarqube-${SONAR_VERSION} sonarqube && \
     rm sonarqube.zip* && \
@@ -52,14 +59,14 @@ RUN set -x \
 
 COPY run.sh ${SONARQUBE_HOME}/bin/
 ENV PATH=$PATH:${SONARQUBE_HOME}/bin
-RUN useradd -l -u 10001 -r -g 0 -m -s /sbin/nologin \
+RUN useradd -l -u sonar -r -g 0 -m -s /sbin/nologin \
         -c "sonarqube application user" sonarqube && \
-    chown -R 10001:0 ${SONARQUBE_HOME} && \
+    chown -R sonar:0 ${SONARQUBE_HOME} && \
     chmod -R g=u ${SONARQUBE_HOME} && \
     chmod ug+x ${SONARQUBE_HOME}/bin/run.sh
 
 VOLUME ["${SONARQUBE_HOME}/data", "${SONARQUBE_HOME}/extensions"]
 
-USER 10001
+USER sonar
 WORKDIR ${SONARQUBE_HOME}
 ENTRYPOINT run.sh
