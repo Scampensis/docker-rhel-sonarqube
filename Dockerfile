@@ -20,7 +20,7 @@ ENV SONAR_VERSION=7.8 \
     # Defaults to using H2
     SONARQUBE_JDBC_USERNAME=sonar \
     SONARQUBE_JDBC_PASSWORD=sonar \
-    SONARQUBE_JDBC_URL= \
+    SONARQUBE_JDBC_URL=jdbc:mysql://localhost/sonar \
     LANG=en_US.utf8 \
     JAVA_HOME=/usr/lib/jvm/jre
 
